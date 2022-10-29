@@ -1,7 +1,7 @@
 from flask import Flask
 from config import Config
 from service.extensions import db, migrate
-from service.database.models import User
+from service.database.models import user
 
 
 def create_app(config_class=Config):

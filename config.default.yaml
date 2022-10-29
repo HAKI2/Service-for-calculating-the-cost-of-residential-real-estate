@@ -1,0 +1,9 @@
+appName: MyApp
+app:
+  secret: some1
+db:
+  name: name
+  user: user
+  pass: pass
+  host: host
+  port: port
