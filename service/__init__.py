@@ -1,12 +1,14 @@
 from flask import Flask
 from config import Config
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from service.extensions import db, migrate
+from service.database.models import User
 
-def create_app():  # config_class=Config
+
+def create_app(config_class=Config):
     app = Flask(__name__)
-    app.config.from_object(Config)
-    db = SQLAlchemy(app)
-    db = SQLAlchemy
-    migrate = Migrate(app, db)
+    app.config.from_object(config_class)
+    db.init_app(app)
+    migrate.init_app(app, db, app.config['MIGRATION_DIR'])
     return app
+
+

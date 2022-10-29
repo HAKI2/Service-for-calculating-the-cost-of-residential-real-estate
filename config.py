@@ -6,5 +6,7 @@ class Config:
     # WORKER_KEY = appConfig['app']['worker'].get()
 
     # Flash-SQLAlchemy config params
-    SQLALCHEMY_DATABASE_URI = 'postgresql://localhost:220384@5432/lct2022_service'
+    SQLALCHEMY_DATABASE_URI = 'postgresql://postgres:220384@localhost:5433/lct2022_service'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    MIGRATION_DIR = os.path.join('service', 'database', 'migrations')
