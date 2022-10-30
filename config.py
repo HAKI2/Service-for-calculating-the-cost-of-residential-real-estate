@@ -18,4 +18,8 @@ class Config:
         appConfig['db']['host'], appConfig['db']['name'])
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
+    # UPLOAD_FOLDER = UPLOAD_FOLDER
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+    ALLOWED_EXTENSIONS = set(['xls', 'xlsx'])
+
     MIGRATION_DIR = os.path.join('service', 'database', 'migrations')
