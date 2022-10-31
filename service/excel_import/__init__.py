@@ -1,8 +1,8 @@
 from flask import Blueprint
-blueprint = Blueprint('excel_check', __name__,
-                      url_prefix='/excel_check',
+blueprint = Blueprint('excel_import', __name__,
+                      url_prefix='/pool',
                       template_folder='templates',
                       static_folder='static',
-                      static_url_path='/excel_check/static/')
+                      static_url_path='/excel_import/static/')
 
-from service.excel_check import views
+from service.excel_import import views

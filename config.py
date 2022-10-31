@@ -9,7 +9,7 @@ with open("config.yaml", "r") as f:
 
 
 class Config:
-    # SECRET_KEY = appConfig['app']['secret'].get() or os.urandom(24)
+    SECRET_KEY = appConfig['app']['secret']
     # WORKER_KEY = appConfig['app']['worker'].get()
 
     # Flash-SQLAlchemy config params

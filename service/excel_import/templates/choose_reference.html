@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block body %}
+{% for i in flats %}
+    <p>{{ i }}</p>
+{% endfor %}
+<form action="" method="POST">
+  <p><input type=number name="reference_quantity">
+      <button type=submit>YEE </button>
+</form>
+{% endblock %}
+</html>

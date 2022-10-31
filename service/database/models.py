@@ -13,7 +13,7 @@ class user(db.Model):
     date_joined = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     last_login = db.Column(db.DateTime, nullable=False)
     password = db.Column(db.String(128), nullable=False)
-    requests = db.relationship('request_pool', backref='user', lazy=True)
+    requests = db.relationship('request_pool', backref='user', lazy=True, cascade="all, delete")
 
     def __repr__(self):
         return "<User(id='%s', first_name='%s', last_name='%s', email='%s', is_admin='%s'," \
@@ -40,9 +40,9 @@ class request_pool(db.Model):
     floor_quantity = db.Column(db.Integer, unique=False, nullable=False)
     wall_material_id = db.Column(db.Integer, db.ForeignKey('wall_material.id'),
                                  nullable=False)
-    room_quantity = db.Column(db.Integer, unique=False, nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     stage = db.Column(db.Integer, nullable=False, default=1)
+    flats = db.relationship('flat', backref='request_pool', lazy=True, cascade="all, delete")
 
     def __repr__(self):
         return "<request_pool(id='%s', user_id='%s', location='%s', segment_id='%s', floor_quantity='%s'," \
@@ -90,6 +90,7 @@ class flat(db.Model):
     request_pool_id = db.Column(db.Integer, db.ForeignKey('request_pool.id'),
                                 nullable=False)
     floor = db.Column(db.Integer, unique=False, nullable=False)
+    room_quantity = db.Column(db.Integer, unique=False, nullable=False)
     total_area = db.Column(db.Float, nullable=False)
     kitchen_area = db.Column(db.Float, unique=False, nullable=False)
     have_balcony = db.Column(db.Boolean, nullable=False)
@@ -98,11 +99,11 @@ class flat(db.Model):
                              nullable=False)
     price = db.Column(db.Numeric(precision=22, scale=10), nullable=True)
     is_reference = db.Column(db.Boolean, nullable=False, default=False)
-    analogue_flats = db.relationship('analogue_flat', backref='flat', lazy=True)
+    analogue_flats = db.relationship('analogue_flat', backref='flat', lazy=True, cascade="all, delete")
 
     def __repr__(self):
         return "<flat(id='%s', request_pool_id='%s', floor='%s', total_area='%s', kitchen_area='%s'," \
-               " have_balcony='%s', minutes_metro_walk='%s', condition_id='%s', price='%s')>" % (
+               " have_balcony='%s', minutes_metro_walk='%s', condition_id='%s', price='%s', room_quantity='%s')>" % (
                    self.id,
                    self.request_pool_id,
                    self.floor,
@@ -112,6 +113,7 @@ class flat(db.Model):
                    self.minutes_metro_walk,
                    self.condition_id,
                    self.price,
+                   self.room_quantity,
                )
 
 
@@ -144,7 +146,8 @@ class analogue_flat(db.Model):
                              nullable=False)
     price = db.Column(db.Numeric(precision=22, scale=10), nullable=True)
     is_ignored = db.Column(db.Boolean, nullable=False, default=False)
-    analogue_flat_corr = db.relationship('analogue_flat_corr', backref='analogue_flat', lazy=True)
+    analogue_flat_corr = db.relationship('analogue_flat_corr', backref='analogue_flat', lazy=True,
+                                         cascade="all, delete")
 
     def __repr__(self):
         return "<analogue_flat(id='%s', flat_id='%s', location='%s', floor='%s', total_area='%s', kitchen_area='%s'," \
@@ -167,7 +170,7 @@ class analogue_flat_corr(db.Model):
     __tablename__ = "analogue_flat_corr"
     id = db.Column(db.Integer, primary_key=True)
     analogue_flat_id = db.Column(db.Integer, db.ForeignKey('analogue_flat.id'),
-                        nullable=False)
+                                 nullable=False)
     location_corr = db.Column(db.Float, unique=False, nullable=False)
     floor_corr = db.Column(db.Float, unique=False, nullable=False)
     total_area_corr = db.Column(db.Float, nullable=False)
