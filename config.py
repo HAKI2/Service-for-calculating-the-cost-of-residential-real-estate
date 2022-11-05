@@ -10,8 +10,12 @@ with open("config.yaml", "r") as f:
 
 class Config:
     SECRET_KEY = appConfig['app']['secret']
+    ADMIN_PASSWORD = appConfig['app']['admin_password']
+    ADMIN_EMAIL = appConfig['app'].get('admin_email')
     # WORKER_KEY = appConfig['app']['worker'].get()
 
+    POSITION_STACK_API = appConfig['api'].get('position_stack_api')
+    MAPBOX_API = appConfig['api'].get('mapbox_api')
     # Flash-SQLAlchemy config params
     SQLALCHEMY_DATABASE_URI = 'postgresql://{}:{}@{}/{}'.format(
         appConfig['db']['user'], appConfig['db']['pass'],

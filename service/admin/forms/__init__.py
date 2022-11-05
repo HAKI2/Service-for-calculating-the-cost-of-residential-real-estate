@@ -1,0 +1,1 @@
+from service.admin.forms.form import LoginForm, RegistrationForm

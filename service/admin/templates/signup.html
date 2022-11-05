@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+ 
+{% block content %}
+    <div class="auth-wrapper">
+        <h1>{{ 'Регистрация' }}</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                {{ form.first_name.label }}<br>
+                {{ form.first_name() }}
+                {% for error in form.first_name.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.last_name.label }}<br>
+                {{ form.last_name() }}
+                {% for error in form.last_name.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.username.label }}<br>
+                {{ form.username() }}
+                {% for error in form.username.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.email.label }}<br>
+                {{ form.email() }}
+                {% for error in form.email.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password.label }}<br>
+                {{ form.password() }}
+                {% for error in form.password.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.password2.label }}<br>
+                {{ form.password2() }}
+                {% for error in form.password2.errors %}
+                    {{ error }}
+                {% endfor %}
+            </p>
+            <p>
+                {{ form.submit(class='btn btn-primary') }}
+            </p>
+        </form>
+    </div>
+{% endblock content %}

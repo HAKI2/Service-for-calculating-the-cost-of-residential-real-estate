@@ -1,19 +1,32 @@
 import datetime
+from service.extensions import db, login
+from flask_login import UserMixin
+from werkzeug.security import check_password_hash, generate_password_hash
 
-from service.extensions import db
+@login.user_loader
+def load_user(id):
+    """Используется Flask-login-ом, чтобы получить информацию из БД о пользователе по его id"""
+    return user.query.get(int(id))
 
 
-class user(db.Model):
+class user(UserMixin, db.Model):
     __tablename__ = "user"
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80), unique=False, nullable=False)
     last_name = db.Column(db.String(80), unique=False, nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=False, nullable=True)
+    username = db.Column(db.String(120), unique=True, nullable=False)
     is_admin = db.Column(db.Boolean, nullable=False, default=False)
     date_joined = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
-    last_login = db.Column(db.DateTime, nullable=False)
+    last_login = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     password = db.Column(db.String(128), nullable=False)
     requests = db.relationship('request_pool', backref='user', lazy=True, cascade="all, delete")
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self):
         return "<User(id='%s', first_name='%s', last_name='%s', email='%s', is_admin='%s'," \
@@ -89,8 +102,10 @@ class flat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     request_pool_id = db.Column(db.Integer, db.ForeignKey('request_pool.id'),
                                 nullable=False)
-    floor = db.Column(db.Integer, unique=False, nullable=False)
-    room_quantity = db.Column(db.Integer, unique=False, nullable=False)
+    floor_id = db.Column(db.Integer, db.ForeignKey('floor.id'),
+                                 nullable=False)
+    room_quantity_id = db.Column(db.Integer, db.ForeignKey('room_quantity.id'),
+                                 nullable=False)
     total_area = db.Column(db.Float, nullable=False)
     kitchen_area = db.Column(db.Float, unique=False, nullable=False)
     have_balcony = db.Column(db.Boolean, nullable=False)
@@ -116,6 +131,31 @@ class flat(db.Model):
                    self.room_quantity,
                )
 
+class floor(db.Model):
+    __tablename__ = "floor"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    flats = db.relationship('flat', backref='floor', lazy=True)
+    analogue_flats = db.relationship('analogue_flat', backref='floor', lazy=True)
+
+    def __repr__(self):
+        return "<floor(id='%s', name='%s')>" % (
+            self.id,
+            self.name,
+        )
+
+class room_quantity(db.Model):
+    __tablename__ = "room_quantity"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    flats = db.relationship('flat', backref='room_quantity', lazy=True)
+
+    def __repr__(self):
+        return "<room_quantity(id='%s', name='%s')>" % (
+            self.id,
+            self.name,
+        )
+
 
 class condition(db.Model):
     __tablename__ = "condition"
@@ -137,7 +177,8 @@ class analogue_flat(db.Model):
     flat_id = db.Column(db.Integer, db.ForeignKey('flat.id'),
                         nullable=False)
     location = db.Column(db.String(80), unique=False, nullable=False)
-    floor = db.Column(db.Integer, unique=False, nullable=False)
+    floor_id = db.Column(db.Integer, db.ForeignKey('floor.id'),
+                        nullable=False)
     total_area = db.Column(db.Float, nullable=False)
     kitchen_area = db.Column(db.Float, unique=False, nullable=False)
     have_balcony = db.Column(db.Boolean, nullable=False)
@@ -150,12 +191,12 @@ class analogue_flat(db.Model):
                                          cascade="all, delete")
 
     def __repr__(self):
-        return "<analogue_flat(id='%s', flat_id='%s', location='%s', floor='%s', total_area='%s', kitchen_area='%s'," \
+        return "<analogue_flat(id='%s', flat_id='%s', location='%s', floor_id='%s', total_area='%s', kitchen_area='%s'," \
                " have_balcony='%s', minutes_metro_walk='%s', condition_id='%s', price='%s', is_ignored='%s')>" % (
                    self.id,
                    self.flat_id,
                    self.location,
-                   self.floor,
+                   self.floor_id,
                    self.total_area,
                    self.kitchen_area,
                    self.have_balcony,
